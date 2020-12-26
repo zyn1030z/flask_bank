@@ -8,13 +8,15 @@
             <thead>
             <tr>
                 <th>Username</th>
+                <th>Bank number
                 <th>Email</th>
                 <th>Money</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td>{{current_user.username}}</td>
+                <td>{{ current_user.username }}</td>
+                <td>{{ current_user.bank_number }}</td>
                 <td>{{ current_user.email }}</td>
                 <td>{{ current_user.money }} VND</td>
             </tr>
