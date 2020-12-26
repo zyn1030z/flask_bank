@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, flash, url_for, redirect
 from flask import Flask
 from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.security import generate_password_hash
 
 from app import app, db
-from app.form import LoginForm, RegistrationForm, WithDrawForm, TransferMoneyForm
+from app.form import LoginForm, RegistrationForm, WithDrawForm, TransferMoneyForm, ChangePasswordForm
 from app.model import User
 
 app.config['SECRET_KEY'] = 'SjdnUends821Jsdlkvxh391ksdODnejdDw'
@@ -46,7 +47,7 @@ def register():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 @app.route('/check_money')
@@ -97,9 +98,18 @@ def transfer_money():
     return render_template('transfer_money.html', form=form)
 
 
-@app.route('/change_pass')
+@app.route('/change_pass', methods=['POST', 'GET'])
 def change_pass():
-    return render_template('change_pass.html')
+    form = ChangePasswordForm(current_user.password_hash)
+    if form.validate_on_submit():
+        if current_user.checkPassword(form.password_current.data):
+            current_user.password_hash = generate_password_hash(form.password_new.data)
+            db.session.commit()
+            flash('đổi mật khẩu thành công, vui lòng đăng nhập lại')
+            return redirect(url_for('logout'))
+        flash(' Lỗi mật khẩu không đúng, vui lòng nhập lại')
+        return redirect(url_for('change_pass'))
+    return render_template('change_pass.html', form=form)
 
 
 if __name__ == '__main__':
