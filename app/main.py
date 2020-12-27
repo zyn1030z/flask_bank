@@ -31,7 +31,7 @@ def login():
             session['attempt'] = attempt
             flash('Invalid username or password')
             return redirect(url_for('login'))
-        login_user(user, remember=form.remember_check.data)
+        login_user(user)
         return redirect(url_for('index'))
     return render_template('login_form.html', form=form)
 
@@ -57,6 +57,7 @@ def logout():
 
 
 @app.route('/check_money')
+@login_required
 def check_money():
     return render_template('check_money.html')
 

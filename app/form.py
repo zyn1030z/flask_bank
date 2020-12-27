@@ -19,18 +19,18 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+        'Repeat Password', validators=[DataRequired(), EqualTo('password', message='Mật khẩu phải trùng nhau')])
     submit = SubmitField('Register')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=self.username.data).first()
         if user is not None:
-            raise ValidationError('Please use a different username.')
+            raise ValidationError('Tên người dùng đã được sử dụng! Xin mời nhập tên khác.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=self.email.data).first()
         if user is not None:
-            raise ValidationError('Please use a different email address.')
+            raise ValidationError('Email đã được sử dụng! Xin mời nhập email khác.')
 
 
 class WithDrawForm(FlaskForm):
