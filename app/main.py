@@ -9,6 +9,13 @@ from app.model import User
 app.config['SECRET_KEY'] = 'SjdnUends821Jsdlkvxh391ksdODnejdDw'
 
 
+# format money
+@app.template_filter()
+def currencyFormat(value):
+    value = float(value)
+    return "{:,.2f} VND".format(value)
+
+
 @app.route('/', methods=['GET'])
 def index():
     session['attempt'] = 3
@@ -29,7 +36,7 @@ def login():
         if user is None or not user.checkPassword(form.password.data):
             attempt -= 1
             session['attempt'] = attempt
-            flash('Invalid username or password')
+            flash('Lỗi!! Thông tin tài khoản không đúng')
             return redirect(url_for('login'))
         login_user(user)
         return redirect(url_for('index'))
@@ -63,11 +70,15 @@ def check_money():
 
 
 @app.route('/withdraw', methods=['POST', 'GET'])
+@login_required
 def withdraw():
     form = WithDrawForm()
     if form.validate_on_submit():
         try:
             money_withdraw = int(form.money_withdraw.data)
+            if money_withdraw > int(current_user.money):
+                flash('Lỗi!! Vui lòng nhập số tiền nhỏ hơn trong tài khoản hiện có')
+                return redirect(url_for('withdraw'))
             current_user.money = int(current_user.money) - money_withdraw
             db.session.commit()
             flash('Rút tiền thành công')
@@ -80,6 +91,7 @@ def withdraw():
 
 
 @app.route('/transfer_money', methods=['POST', 'GET'])
+@login_required
 def transfer_money():
     form = TransferMoneyForm()
     if form.validate_on_submit():
@@ -93,7 +105,7 @@ def transfer_money():
                     user_receivered.money = int(user_receivered.money) + money_transfer
                     db.session.add(user_receivered)
                     db.session.commit()
-                    flash('chuyển tiền thành công')
+                    flash('Chuyển tiền thành công')
                     return redirect(url_for('transfer_money'))
                 flash('vui lòng nhập số tiền nhỏ hơn trong tài khoản của bạn')
                 return redirect(url_for('transfer_money'))
@@ -106,6 +118,7 @@ def transfer_money():
 
 
 @app.route('/change_pass', methods=['POST', 'GET'])
+@login_required
 def change_pass():
     form = ChangePasswordForm(current_user.password_hash)
     if form.validate_on_submit():
@@ -120,6 +133,7 @@ def change_pass():
 
 
 @app.route('/history', methods=['POST', 'GET'])
+@login_required
 def check_history():
     return render_template('history_check.html')
 

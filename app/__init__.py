@@ -3,7 +3,6 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from app.config import Config
 from flask_login import LoginManager
 
 app = Flask(__name__)
@@ -17,5 +16,8 @@ app.config.update(
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app=app)
+
+# sử dụng cho @login_required
 login = LoginManager(app)
-login.login_view = ''
+login.login_view = 'login'
+login.login_message = 'Lỗi!! Vui lòng đăng nhập để sử dụng dịch vụ!'

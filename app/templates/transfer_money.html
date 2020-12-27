@@ -9,6 +9,7 @@
                     <form class="form-horizontal" , method="POST" action="/transfer_money">
                         {{ form.csrf_token }}
                         <fieldset>
+                            <legend style="text-align: center">Chuyển tiền</legend>
                             {{ render_field(form.money_transfer, placeholder='nhập số tiền cần chuyển') }}
                             {{ render_field(form.bank_number, placeholder='nhập số tài khoản người nhận') }}
                             <div class="form-group">

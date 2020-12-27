@@ -10,7 +10,7 @@
                     <form class="form-horizontal" , method="POST" action="/change_pass">
                         {{ form.csrf_token }}
                         <fieldset>
-                            <legend>Đổi mật khẩu</legend>
+                            <legend style="text-align: center">Đổi mật khẩu</legend>
                             {{ render_field(form.password_current, placeholder='nhập mật khẩu hiện tại') }}
                             {{ render_field(form.password_new, placeholder='nhập mật khẩu mới') }}
                             <div class="form-group">

@@ -10,9 +10,9 @@
                     <form class="form-horizontal" , method="POST" action="/login">
                         {{ form.csrf_token }}
                         <fieldset>
-                            <legend>Đăng nhập</legend>
-                            {{ render_field(form.username, placeholder=form.username.label.text) }}
-                            {{ render_field(form.password, placeholder=form.password.label.text) }}
+                            <legend style="text-align: center">Đăng nhập</legend>
+                            {{ render_field(form.username, placeholder='Tên đăng nhập') }}
+                            {{ render_field(form.password, placeholder='Mật khẩu') }}
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <button type="reset" class="btn btn-default">Cancel</button>

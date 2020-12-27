@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="container">
-        <h2>Thông tin tài khoản</h2>
+        <h2 style="text-align: center">Thông tin tài khoản</h2>
         <table class="table table-dark table-striped">
             <thead>
             <tr>
@@ -15,10 +15,12 @@
             </thead>
             <tbody>
             <tr>
-                <td>{{ current_user.username }}</td>
-                <td>{{ current_user.bank_number }}</td>
-                <td>{{ current_user.email }}</td>
-                <td>{{ current_user.money }}</td>
+                {% if current_user.money %}
+                    <td>{{ current_user.username }}</td>
+                    <td>{{ current_user.bank_number }}</td>
+                    <td>{{ current_user.email }}</td>
+                    <td>{{ current_user.money| currencyFormat }}</td>
+                {% endif %}
             </tr>
             </tbody>
         </table>

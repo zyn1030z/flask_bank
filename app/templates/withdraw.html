@@ -9,6 +9,7 @@
                     <form class="form-horizontal" , method="POST" action="/withdraw">
                         {{ form.csrf_token }}
                         <fieldset>
+                            <legend style="text-align: center">Rút tiền</legend>
                             {{ render_field(form.money_withdraw, placeholder='nhập số tiền cần rút') }}
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
@@ -24,13 +25,13 @@
                 {% if messages %}
 
                     {% for message in messages %}
-                        {% if "Lỗi" not in message[1]%}
+                        {% if "Lỗi" not in message[1] %}
                             <div class="alert alert-info">
                                 <strong>Success! </strong> {{ message[1] }}
                             </div>
                         {% endif %}
 
-                        {% if "Lỗi" in message[1]%}
+                        {% if "Lỗi" in message[1] %}
                             <div class="alert alert-danger">
                                 <strong>Error!: </strong> {{ message[1] }}
                             </div>

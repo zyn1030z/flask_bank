@@ -10,7 +10,7 @@
                 <form class="form-horizontal", method="POST" action="{{ url_for('register') }}">
                     {{ form.csrf_token }}
                     <fieldset>
-                        <legend>Đăng ký </legend>
+                        <legend style="text-align: center">Đăng ký </legend>
                         {{ render_field(form.username, placeholder=form.username.label.text) }}
                         {{ render_field(form.email, placeholder=form.email.label.text) }}
                         {{ render_field(form.password, placeholder=form.password.label.text) }}
