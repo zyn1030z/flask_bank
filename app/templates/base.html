@@ -10,8 +10,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <title>Bank</title>
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='bootstrap.min.js') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='theme.js') }}" rel="stylesheet">
 
 </head>
 <body>
@@ -24,16 +22,16 @@
 
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav">
+                <a href="/" class="nav-item nav-link ">Trang chủ</a>
                 {% if not current_user.is_anonymous %}
-                    <a href="/index" class="nav-item nav-link ">Trang chủ</a>
                     <a href="/check_money" class="nav-item nav-link">Kiểm tra số dư</a>
                     <a href="/withdraw" class="nav-item nav-link">Rút tiền</a>
                     <a href="/transfer_money" class="nav-item nav-link">Chuyển tiền</a>
-                    <a href="#" class="nav-item nav-link">Lịch sử giao dịch</a>
+                    <a href="/history" class="nav-item nav-link">Lịch sử giao dịch</a>
                     <a href="/change_pass" class="nav-item nav-link">Đổi mật khẩu</a>
                     <a href="/logout" class="nav-item nav-link">Đăng xuất</a>
                 {% else %}
-                    <a href="/" class="nav-item nav-link">Đăng nhập</a>
+                    <a href="/login" class="nav-item nav-link">Đăng nhập</a>
                     <a href="/register" class="nav-item nav-link">Đăng ký</a>
                 {% endif %}
             </div>

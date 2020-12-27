@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request, flash, url_for, redirect
-from flask import Flask
+from flask import Flask, render_template, request, flash, url_for, redirect, session
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash
 
@@ -10,19 +9,26 @@ from app.model import User
 app.config['SECRET_KEY'] = 'SjdnUends821Jsdlkvxh391ksdODnejdDw'
 
 
-@app.route('/index', methods=['POST', 'GET'])
+@app.route('/', methods=['GET'])
 def index():
+    session['attempt'] = 3
     return render_template('index.html')
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
+    attempt = session.get('attempt')
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
+        if attempt == 1:
+            flash('Lỗi!! Tài khoản của bạn bị khóa do nhập sai quá 3 lần')
+            return redirect(url_for('login'))
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.checkPassword(form.password.data):
+            attempt -= 1
+            session['attempt'] = attempt
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_check.data)
@@ -112,5 +118,10 @@ def change_pass():
     return render_template('change_pass.html', form=form)
 
 
+@app.route('/history', methods=['POST', 'GET'])
+def check_history():
+    return render_template('history_check.html')
+
+
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.1.108', port=8080)
+    app.run(debug=True)
