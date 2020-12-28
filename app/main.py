@@ -9,7 +9,6 @@ from app.model import User
 # app.config['SECRET_KEY'] = 'SjdnUends821Jsdlkvxh391ksdODnejdDw'
 
 
-# format money
 @app.template_filter()
 def currencyFormat(value):
     value = float(value)

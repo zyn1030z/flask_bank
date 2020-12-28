@@ -25,7 +25,7 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=self.username.data).first()
         if user is not None:
-            raise ValidationError('Tên người dùng đã được sử dụng! Xin mời nhập tên khác.')
+            raise ValidationError('Tên người dùng không hợp lệ! Xin mời nhập tên khác.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=self.email.data).first()
@@ -42,11 +42,6 @@ class TransferMoneyForm(FlaskForm):
     money_transfer = StringField('Số tiền cần chuyển', validators=[DataRequired()])
     bank_number = StringField('Số tài khoản người nhận', validators=[DataRequired()])
     submit = SubmitField('Chuyển tiền')
-    #
-    # def validate_money_transfer(self, email):
-    #     user = User.query.filter_by(email=self.email.data).first()
-    #     if user is not None:
-    #         raise ValidationError('Please use a different email address.')
 
 
 class ChangePasswordForm(FlaskForm):
@@ -62,4 +57,3 @@ class ChangePasswordForm(FlaskForm):
         user = User.query.filter_by(password_hash=generate_password_hash(self.password_current.data)).first()
         if user is not None:
             raise ValidationError('Please retype password.')
-
