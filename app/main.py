@@ -6,13 +6,11 @@ from app import app, db
 from app.form import LoginForm, RegistrationForm, WithDrawForm, TransferMoneyForm, ChangePasswordForm
 from app.model import User
 
-# app.config['SECRET_KEY'] = 'SjdnUends821Jsdlkvxh391ksdODnejdDw'
-
 
 @app.template_filter()
 def currencyFormat(value):
     value = float(value)
-    return "{:,.2f} VND".format(value)
+    return "{:,.0f} VND".format(value)
 
 
 @app.route('/', methods=['GET'])
@@ -108,10 +106,10 @@ def transfer_money():
                     return redirect(url_for('transfer_money'))
                 flash('vui lòng nhập số tiền nhỏ hơn trong tài khoản của bạn')
                 return redirect(url_for('transfer_money'))
-            flash('số tài khoản người nhận không đúng')
+            flash('Lỗi!!Số tài khoản người nhận không đúng')
             return redirect(url_for('transfer_money'))
         except:
-            flash('Lỗi, Đinh dạng không đúng, vui lòng nhập lại!')
+            flash('Lỗi!!Đinh dạng không đúng, vui lòng nhập lại!')
             return redirect(url_for('transfer_money'))
     return render_template('transfer_money.html', form=form)
 
@@ -135,6 +133,16 @@ def change_pass():
 @login_required
 def check_history():
     return render_template('history_check.html')
+
+
+@app.route('/test')
+def test():
+    return render_template('base.html')
+
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
 
 
 if __name__ == '__main__':
