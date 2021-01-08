@@ -9,8 +9,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <title>Bank</title>
-    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
-
+    <link href="../static/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="bs-example">
@@ -31,7 +30,7 @@
                     <a href="/change_pass" class="nav-item nav-link">Đổi mật khẩu</a>
                     <a href="/logout" class="nav-item nav-link">Đăng xuất</a>
                 {% else %}
-                    <a href="/login" class="nav-item nav-link">Đăng nhập</a>
+                    <a href="{{ url_for('login') }}" class="nav-item nav-link">Đăng nhập</a>
                     <a href="/register" class="nav-item nav-link">Đăng ký</a>
                 {% endif %}
             </div>

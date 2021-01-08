@@ -57,3 +57,4 @@ class ChangePasswordForm(FlaskForm):
         user = User.query.filter_by(password_hash=generate_password_hash(self.password_current.data)).first()
         if user is not None:
             raise ValidationError('Please retype password.')
+

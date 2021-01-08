@@ -1,12 +1,11 @@
-import os
-
-from flask import Flask
+from flask import Flask, url_for
+from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
-from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
+from flask_migrate import Migrate
+from werkzeug import security
 
 app = Flask(__name__)
-bootstrap = Bootstrap(app=app)
 POSTGRES = {
     'user': 'postgres',
     'pw': 'postgres',
@@ -25,7 +24,19 @@ app.config.update(
     SQLALCHEMY_TRACK_MODIFICATIONS=False
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['FLASK_ADMIN_SWATCH'] = 'sandstone'
+app.config['SECURITY_PASSWORD_SALT'] = 'none'
+# Configure application to route to the Flask-Admin index view upon login
+app.config['SECURITY_POST_LOGIN_VIEW'] = '/admin/'
+# Configure application to route to the Flask-Admin index view upon logout
+app.config['SECURITY_POST_LOGOUT_VIEW'] = '/admin/'
+# Configure application to route to the Flask-Admin index view upon registering
+app.config['SECURITY_POST_REGISTER_VIEW'] = '/admin/'
+app.config['SECURITY_REGISTERABLE'] = True
+# Configure application to not send an email upon registration
+app.config['SECURITY_SEND_REGISTER_EMAIL'] = False
 db = SQLAlchemy(app=app)
+migrate = Migrate(app, db)
 
 # sử dụng cho @login_required
 login = LoginManager(app)

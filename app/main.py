@@ -1,10 +1,14 @@
 from flask import Flask, render_template, request, flash, url_for, redirect, session
+from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_security import SQLAlchemyUserDatastore, Security
 from werkzeug.security import generate_password_hash
 
 from app import app, db
 from app.form import LoginForm, RegistrationForm, WithDrawForm, TransferMoneyForm, ChangePasswordForm
-from app.model import User
+from app.model import User, Roles
+from flask_admin import Admin
+from flask_admin import helpers as admin_helpers
 
 
 @app.template_filter()
@@ -19,23 +23,31 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login_user', methods=['POST', 'GET'])
 def login():
     attempt = session.get('attempt')
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
         if attempt == 1:
+            user.active = False
+            db.session.commit()
             flash('Lỗi!! Tài khoản của bạn bị khóa do nhập sai quá 3 lần')
             return redirect(url_for('login'))
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.checkPassword(form.password.data):
+        if user is None:
+            attempt -= 1
+            session['attempt'] = attempt
+            flash('Lỗi!! Thông tin tài khoản không đúng')
+            return redirect(url_for('login'))
+        elif not user.checkPassword(form.password.data):
             attempt -= 1
             session['attempt'] = attempt
             flash('Lỗi!! Thông tin tài khoản không đúng')
             return redirect(url_for('login'))
         login_user(user)
+        print(current_user.has_role('role_user'))
         return redirect(url_for('index'))
     return render_template('login_form.html', form=form)
 
@@ -117,10 +129,11 @@ def transfer_money():
 @app.route('/change_pass', methods=['POST', 'GET'])
 @login_required
 def change_pass():
-    form = ChangePasswordForm(current_user.password_hash)
+    form = ChangePasswordForm(current_user.password)
     if form.validate_on_submit():
         if current_user.checkPassword(form.password_current.data):
-            current_user.password_hash = generate_password_hash(form.password_new.data)
+            # current_user.password = generate_password_hash(form.password_new.data)
+            current_user.password = form.password_new.data
             db.session.commit()
             flash('đổi mật khẩu thành công, vui lòng đăng nhập lại')
             return redirect(url_for('logout'))
@@ -135,14 +148,71 @@ def check_history():
     return render_template('history_check.html')
 
 
-@app.route('/test')
-def test():
-    return render_template('base.html')
+user_datastore = SQLAlchemyUserDatastore(db, User, Roles)
+security = Security(app, user_datastore)
+admin = Admin(app, name='Admin', base_template='my_master.html', template_mode='bootstrap3')
 
 
-@app.route('/admin')
-def admin():
-    return render_template('admin.html')
+class MyModelView(ModelView):
+    # def is_accessible(self):
+    #     return (current_user.is_active and
+    #             current_user.is_authenticated)
+    can_export = True
+
+    def is_accessible(self):
+        if not current_user.is_active or not current_user.is_authenticated:
+            return False
+        if current_user.has_role('role_admin'):
+            self.can_create = True
+            self.can_edit = True
+            self.can_delete = True
+            # self.can_export = True
+            return True
+        return False
+
+    def _handle_view(self, name):
+        if not self.is_accessible():
+            return redirect(url_for('security.login'))
+
+    column_list = ['username', 'password', 'bank_number', 'email', 'money', 'active', 'roles']
+
+
+class MyModelViewRoles(ModelView):
+    # def is_accessible(self):
+    #     return (current_user.is_active and
+    #             current_user.is_authenticated)
+    can_export = True
+
+    def is_accessible(self):
+        if not current_user.is_active or not current_user.is_authenticated:
+            return False
+        if current_user.has_role('role_admin'):
+            self.can_create = True
+            self.can_edit = True
+            self.can_delete = True
+            # self.can_export = True
+            return True
+        return False
+
+    def _handle_view(self, name):
+        if not self.is_accessible():
+            return redirect(url_for('security.login'))
+
+    column_list = ['id', 'name', 'description']
+
+
+admin.add_view(MyModelView(User, db.session))
+admin.add_view(MyModelViewRoles(Roles, db.session))
+
+
+@security.context_processor
+def security_context_processor():
+    return dict(
+        admin_base_template=admin.base_template,
+        admin_view=admin.index_view,
+        get_url=url_for,
+        h=admin_helpers
+    )
 
 
 if __name__ == '__main__':
